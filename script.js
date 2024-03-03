@@ -8,11 +8,12 @@ const passInputElm = document.getElementById('pass')
 const confirmPassInputElm = document.getElementById('confirm-pass')
 
 const emailErr = document.getElementById('email-err')
+const countryErr = document.getElementById('country-err')
 const zipErr = document.getElementById('zip-err')
 const passErr = document.getElementById('pass-err')
 const confirmPassErr = document.getElementById('confirm-pass-err')
 
-const defaultZipPattern = '(?i)^[a-z0-9][a-z0-9- ]{0,10}[a-z0-9]$'
+const defaultZipPattern = '^([a-z0-9][a-z0-9- ]{0,10}[a-z0-9])$'
 const zipPatterns = {
     GB: 'GIR[ ]?0AA|((AB|AL|B|BA|BB|BD|BH|BL|BN|BR|BS|BT|CA|CB|CF|CH|CM|CO|CR|CT|CV|CW|DA|DD|DE|DG|DH|DL|DN|DT|DY|E|EC|EH|EN|EX|FK|FY|G|GL|GY|GU|HA|HD|HG|HP|HR|HS|HU|HX|IG|IM|IP|IV|JE|KA|KT|KW|KY|L|LA|LD|LE|LL|LN|LS|LU|M|ME|MK|ML|N|NE|NG|NN|NP|NR|NW|OL|OX|PA|PE|PH|PL|PO|PR|RG|RH|RM|S|SA|SE|SG|SK|SL|SM|SN|SO|SP|SR|SS|ST|SW|SY|TA|TD|TF|TN|TQ|TR|TS|TW|UB|W|WA|WC|WD|WF|WN|WR|WS|WV|YO|ZE)(d[dA-Z]?[ ]?d[ABD-HJLN-UW-Z]{2}))|BFPO[ ]?d{1,4}',
     JE: 'JEd[dA-Z]?[ ]?d[ABD-HJLN-UW-Z]{2}',
@@ -187,18 +188,38 @@ function genMessage(inputName, type) {
     }
 }
 
-zipInputElm.setAttribute('pattern', defaultZipPattern)
+function validateZipPattern() {
+    if (!zipInputElm.checkValidity()) return
+    const alphaCode = countrySelectElm.value
+    const zip = zipInputElm.value
+    let message = ''
+    let constraint
+    if (alphaCode === '0' || !(alphaCode in zipPatterns))
+        constraint = new RegExp(defaultZipPattern, '')
+    else constraint = new RegExp(zipPatterns[alphaCode], '')
 
-function setZipPattern(e) {
-    const alphaCode = e.target.value
-    if (!alphaCode || !(alphaCode in zipPatterns)) {
-        zipInputElm.setAttribute('pattern', defaultZipPattern)
-        return
+    if (!constraint.test(zip))
+        message = 'Zip Code does not comply with the selected country.'
+    else message = ''
+
+    setErr(message, zipErr)
+    zipInputElm.setCustomValidity(message)
+}
+
+function validateCountry() {
+    const value = countrySelectElm.value
+    let message = ''
+    if (value != '0') {
+        message = ''
+    } else {
+        message = `Please select a country.`
     }
-    zipInputElm.setAttribute('pattern', zipPatterns[alphaCode])
+    setErr(message, countryErr)
+    countrySelectElm.setCustomValidity(message)
 }
 
 function validatePass() {
+    if (!passInputElm.checkValidity()) return
     const value = passInputElm.value
     const minLength = 8
     let message = ''
@@ -246,8 +267,12 @@ emailInputElm.addEventListener('focusout', () =>
     validate('Email', emailInputElm, emailErr),
 )
 
+countrySelectElm.addEventListener('focusout', () => validateCountry())
+countrySelectElm.addEventListener('change', validateZipPattern)
+
 zipInputElm.addEventListener('focusout', () => {
     validate('Zip Code', zipInputElm, zipErr)
+    validateZipPattern()
 })
 
 passInputElm.addEventListener('focusout', () => {
@@ -260,4 +285,6 @@ confirmPassInputElm.addEventListener('focusout', () => {
     matchPass()
 })
 
-countrySelectElm.addEventListener('change', setZipPattern)
+formElm.addEventListener('submit', (e) => {
+    e.preventDefault()
+})
