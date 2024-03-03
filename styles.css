@@ -1,6 +1,7 @@
 :root {
     --inval: red;
     --val: green;
+    --accent: lavender;
 }
 
 * {
@@ -46,6 +47,13 @@ input:invalid {
 
 #main-form>h1 {
     margin: 0 auto;
+}
+
+#form-submit-btn {
+    font-size: 1.3rem;
+    border-radius: 10px;
+    background-color: var(--accent);
+    margin: 20px 40px;
 }
 
 .input-container {
