@@ -53,3 +53,8 @@ input:invalid {
     grid-template-rows: auto;
     align-items: center;
 }
+
+.error {
+    color: var(--inval);
+    padding: 1px 5px;
+}

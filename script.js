@@ -172,14 +172,22 @@ const zipPatterns = {
     WF: '986d{2}',
 }
 
-zipInputElm.setAttribute('pattern', defaultZipPattern)
+function setErr(message, element) {
+    element.innerText = message
+}
 
-function validateEmail(e) {
-    const value = e.target.value
-    if (value === '') {
-    } else {
+function genMessage(inputName, type) {
+    switch (type) {
+        case 'empty':
+            return `${inputName} is required*`
+        case 'mismatch':
+            return `${inputName} is expected here.`
+        default:
+            return ''
     }
 }
+
+zipInputElm.setAttribute('pattern', defaultZipPattern)
 
 function setZipPattern(e) {
     const alphaCode = e.target.value
@@ -190,5 +198,66 @@ function setZipPattern(e) {
     zipInputElm.setAttribute('pattern', zipPatterns[alphaCode])
 }
 
-email.addEventListener('change', validateEmail)
+function validatePass() {
+    const value = passInputElm.value
+    const minLength = 8
+    let message = ''
+    if (value.length >= minLength) {
+        message = ''
+    } else {
+        message = `Password must be atleast ${minLength} characters long`
+    }
+    setErr(message, passErr)
+    passInputElm.setCustomValidity(message)
+}
+
+function matchPass() {
+    const value = passInputElm.value
+    const cvalue = confirmPassInputElm.value
+    let message = ''
+    if (value === cvalue) {
+        message = ''
+    } else {
+        message = 'Passwords do not match'
+    }
+    setErr(message, confirmPassErr)
+    confirmPassInputElm.setCustomValidity(message)
+}
+
+function validate(inputName, inputElm, errElm) {
+    const value = inputElm.value
+
+    let message = ''
+    if (!value) {
+        message = genMessage(inputName, 'empty')
+        setErr(message, errElm)
+        inputElm.setCustomValidity(message)
+    } else if (inputElm.validity.typeMismatch) {
+        message = genMessage(inputName, 'mismatch')
+        setErr(message, errElm)
+        emailInputElm.setCustomValidity(message)
+    } else {
+        setErr('', errElm)
+        inputElm.setCustomValidity('')
+    }
+}
+
+emailInputElm.addEventListener('focusout', () =>
+    validate('Email', emailInputElm, emailErr),
+)
+
+zipInputElm.addEventListener('focusout', () => {
+    validate('Zip Code', zipInputElm, zipErr)
+})
+
+passInputElm.addEventListener('focusout', () => {
+    validate('Password', passInputElm, passErr)
+    validatePass()
+})
+
+confirmPassInputElm.addEventListener('focusout', () => {
+    validate('Confirm Password', confirmPassInputElm, confirmPassErr)
+    matchPass()
+})
+
 countrySelectElm.addEventListener('change', setZipPattern)
