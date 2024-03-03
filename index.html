@@ -8,11 +8,11 @@
         <title>Form</title>
     </head>
     <body>
-        <form id="main-form">
+        <form id="main-form" novalidate>
             <h1>Validation</h1>
             <div class="input-container">
                 <label for="email">Email</label>
-                <input id="email" type="email" />
+                <input id="email" type="email" placeholder="Email" />
             </div>
             <div class="input-container">
                 <label for="country">Country</label>
@@ -508,15 +508,19 @@
             </div>
             <div class="input-container">
                 <label for="zip">Zip Code</label>
-                <input id="zip" type="text" />
+                <input id="zip" type="text" placeholder="Zip Code" />
             </div>
             <div class="input-container">
                 <label for="pass">Password</label>
-                <input id="pass" type="password" />
+                <input id="pass" type="password" placeholder="Password" />
             </div>
             <div class="input-container">
-                <label for="confirm-pass">Confirm Pass</label>
-                <input id="confirm-pass" type="password" />
+                <label for="confirm-pass">Confirm Password</label>
+                <input
+                    id="confirm-pass"
+                    type="password"
+                    placeholder="Confirm Password"
+                />
             </div>
         </form>
     </body>
